@@ -1,0 +1,27 @@
+{
+  "name": "poe-live-search",
+  "version": "1.0.0",
+  "description": "Aggregate multiple Path of Exile live searches at once",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nick-ng/poe-live-search.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nick-ng/poe-live-search/issues"
+  },
+  "homepage": "https://github.com/nick-ng/poe-live-search#readme",
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "socket-io": "^1.0.0",
+    "ws": "^7.5.3"
+  }
+}
