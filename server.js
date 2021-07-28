@@ -1,19 +1,29 @@
 require("dotenv").config();
-const WebSocket = require("ws");
+const express = require("express");
+const compression = require("compression");
+const path = require("path");
+const http = require("http");
 const fetch = require("node-fetch");
+const socketio = require("socket.io");
 const fs = require("fs");
 
-const { requestOptions } = require("./websocket");
+const { watchSearches } = require("./websocket");
 
-const hydrate = async (id) => {
-  const res = await fetch(
-    `https://www.pathofexile.com/api/trade/fetch/${id}`,
-    requestOptions
-  );
-  const resJson = await res.json();
-  const { result } = resJson;
-  return result.map((a) => a.listing);
-};
+const app = express();
+const server = http.createServer(app);
+const router = express.Router();
+const io = socketio(server);
+
+const port = process.env.PORT || 9362;
+app.set("port", port);
+
+app.use(compression());
+app.use(express.json());
+app.use(router);
+app.use(express.static("dist"));
+app.use((req, res) => {
+  res.sendFile(path.resolve(__dirname, "./dist/index.html"));
+});
 
 const main = async () => {
   try {
@@ -24,36 +34,11 @@ const main = async () => {
 
   const searches = require("./searches.json");
 
-  let clients = searches.map(({ searchUrl }) => {
-    const url = searchUrl.replace(
-      "https://www.pathofexile.com/trade/search/",
-      "wss://www.pathofexile.com/api/trade/live/"
-    );
-
-    return new WebSocket(url, requestOptions);
-  });
-
-  clients.map((client) => {
-    client.on("message", (msg) => {
-      try {
-        const msgJson = JSON.parse(msg);
-        const itemIds = msgJson.new;
-        if (!Array.isArray(itemIds)) {
-          console.log("Not array", msg);
-          return;
-        }
-        itemIds.forEach(async (itemId) => {
-          const a = await hydrate(itemId);
-          console.log(a[0].whisper);
-        });
-      } catch (e) {
-        console.log("couldn't parse msg", e);
-      }
-    });
-    client.on("error", (e) => {
-      console.log("error", e);
-    });
-  });
+  watchSearches(searches, io);
 };
 
 main();
+
+server.listen(app.get("port"), () => {
+  console.log(`${new Date()} Website server listening on ${port}.`);
+});
