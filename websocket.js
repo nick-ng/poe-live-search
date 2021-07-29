@@ -71,14 +71,19 @@ const watchSearches = async (searches, io = null) => {
     console.log(`20 search limit. You have ${searches.length}`);
     return;
   }
+
+  console.log(`Starting ${searches.length} live searches`);
+
   for (const search of searches) {
-    const { url } = search;
+    const { url, note } = search;
+
     const wsUrl = url.replace(
       "https://www.pathofexile.com/trade/search/",
       "wss://www.pathofexile.com/api/trade/live/"
     );
 
     function makeClient() {
+      console.log(`Connecting ${note}`);
       const client = new WebSocket(wsUrl, requestOptions);
 
       addEvents(client, io, search, () => {
@@ -88,7 +93,7 @@ const watchSearches = async (searches, io = null) => {
 
     setTimeout(() => {
       makeClient();
-    }, counter * 30000);
+    }, counter * 9000);
 
     counter++;
   }

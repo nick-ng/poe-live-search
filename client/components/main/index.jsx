@@ -4,13 +4,14 @@ import io from "socket.io-client";
 
 import Listing from "./listing";
 import VoiceChooser from "./voice-chooser";
-import { getVoices, sayWithVoice } from "./text-to-speech";
+import { getVoices, sayWithVoice, makePhrase } from "./text-to-speech";
 import { trimListings, filterListingsChaos } from "./utils";
 
 const MAX_CHAOS = "MAX_CHAOS";
 const VOICE_CHARACTER = "VOICE_CHARACTER";
 const VOICE_VOLUME = "VOICE_VOLUME";
 const VOICE_VERBOSE = "VOICE_VERBOSE";
+const VOICE_NONVERBOSE_PHRASE = "VOICE_NONVERBOSE_PHRASE";
 const VOICE_COOLDOWN_MS = 1000;
 
 const Container = styled.div``;
@@ -56,6 +57,9 @@ export default function Main() {
   const [verbose, setVerbose] = useState(
     localStorage.getItem(VOICE_VERBOSE) === "true"
   );
+  const [nonVerbosePhrase, setNonVerbosePhrase] = useState(
+    localStorage.getItem(VOICE_NONVERBOSE_PHRASE) || "woop"
+  );
   const [lastSay, setLastSay] = useState(0);
 
   useEffect(() => {
@@ -95,15 +99,11 @@ export default function Main() {
     const newest = filterListingsChaos([newListings[0]], maxChaos).pop();
 
     if (newest) {
-      const phrase = `${newest.note}${
-        newest.price
-          ? ` for ${newest.price.amount} ${newest.price.currency}`
-          : ""
-      }`;
+      const phrase = makePhrase(newest);
       if (verbose && phrase) {
         sayWithVoice(phrase, voice, voiceVolume);
       } else {
-        sayWithVoice("woop!", voice, voiceVolume);
+        sayWithVoice(nonVerbosePhrase, voice, voiceVolume);
       }
       setLastSay(Date.now());
     }
@@ -179,6 +179,17 @@ export default function Main() {
               onChange={(e) => {
                 setVerbose(e.target.checked);
                 localStorage.setItem(VOICE_VERBOSE, e.target.checked);
+              }}
+            />
+          </label>
+          <label>
+            Non-Descriptive Phrase:{" "}
+            <input
+              value={nonVerbosePhrase}
+              type="text"
+              onChange={(e) => {
+                setNonVerbosePhrase(e.target.value);
+                localStorage.setItem(VOICE_NONVERBOSE_PHRASE, e.target.value);
               }}
             />
           </label>

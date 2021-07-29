@@ -7,6 +7,14 @@ const sleep = (ms, output = null) =>
     });
   });
 
+export const makePhrase = (listing) => {
+  if (listing.price) {
+    return `${listing.price.amount} ${listing.price.currency} for ${listing.note}`;
+  }
+
+  return listing.note;
+};
+
 export const getVoices = async () => {
   for (let n = 0; n < 10000; n++) {
     if (typeof synth.getVoices === "function") {

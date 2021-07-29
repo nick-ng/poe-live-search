@@ -7,7 +7,7 @@ const Container = styled.div`
   font-family: "Comic Sans MS", sans-serif;
   margin-bottom: 0.5em;
   display: grid;
-  grid-template-columns: auto 1fr 1fr 1fr;
+  grid-template-columns: auto auto auto auto;
   gap: 0.5em;
   align-items: center;
 `;
@@ -51,6 +51,7 @@ export default function Listing({ listing, onClick }) {
       ) : (
         <div>No Price</div>
       )}
+      <div>{account.lastCharacterName}</div>
       <div>{account.name}</div>
       <div>{note}</div>
     </Container>
