@@ -67,6 +67,10 @@ const addEvents = (client, io, extra = {}, retry) => {
 
 const watchSearches = async (searches, io = null) => {
   let counter = 0;
+  if (searches.length > 20) {
+    console.log(`20 search limit. You have ${searches.length}`);
+    return;
+  }
   for (const search of searches) {
     const { url } = search;
     const wsUrl = url.replace(
