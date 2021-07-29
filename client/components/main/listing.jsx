@@ -7,7 +7,7 @@ const Container = styled.div`
   font-family: "Comic Sans MS", sans-serif;
   margin-bottom: 0.5em;
   display: grid;
-  grid-template-columns: auto auto auto auto;
+  grid-template-columns: auto auto auto auto auto;
   gap: 0.5em;
   align-items: center;
 `;

@@ -93,7 +93,7 @@ const watchSearches = async (searches, io = null) => {
 
     setTimeout(() => {
       makeClient();
-    }, counter * 9000);
+    }, counter * 5000);
 
     counter++;
   }
