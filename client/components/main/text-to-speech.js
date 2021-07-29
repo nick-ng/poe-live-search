@@ -17,6 +17,9 @@ export const getVoices = async () => {
 };
 
 export const sayWithVoice = (phrase, voiceURI, volume = 0.5, rate = 1.5) => {
+  if (volume <= 0) {
+    return;
+  }
   const voice = synth.getVoices().find((voice) => voice.voiceURI === voiceURI);
   const utterance = new SpeechSynthesisUtterance(phrase);
   utterance.volume = volume;

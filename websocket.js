@@ -2,6 +2,13 @@ const WebSocket = require("ws");
 const fetch = require("node-fetch");
 const { v4: uuid } = require("uuid");
 
+const sleep = (ms, output = null) =>
+  new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve(output);
+    });
+  });
+
 const requestOptions = {
   headers: {
     "User-Agent": process.env.USER_AGENT,
@@ -27,7 +34,7 @@ const hydrate = async (id, query) => {
   return [];
 };
 
-const addEvents = (client, io, extra = {}) => {
+const addEvents = (client, io, extra = {}, retry) => {
   client.on("message", (msg) => {
     try {
       const msgJson = JSON.parse(msg);
@@ -51,22 +58,36 @@ const addEvents = (client, io, extra = {}) => {
     }
   });
   client.on("error", (e) => {
-    console.log("error", e);
+    console.log("error", extra.note, e.message);
+    if (typeof retry === "function") {
+      retry();
+    }
   });
 };
 
 const watchSearches = async (searches, io = null) => {
-  searches.forEach((search) => {
+  let counter = 0;
+  for (const search of searches) {
     const { url } = search;
     const wsUrl = url.replace(
       "https://www.pathofexile.com/trade/search/",
       "wss://www.pathofexile.com/api/trade/live/"
     );
 
-    const client = new WebSocket(wsUrl, requestOptions);
+    function makeClient() {
+      const client = new WebSocket(wsUrl, requestOptions);
 
-    addEvents(client, io, search);
-  });
+      addEvents(client, io, search, () => {
+        setTimeout(() => makeClient(), 70000);
+      });
+    }
+
+    setTimeout(() => {
+      makeClient();
+    }, counter * 30000);
+
+    counter++;
+  }
 };
 
 module.exports = {

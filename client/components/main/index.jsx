@@ -178,6 +178,7 @@ export default function Main() {
               type="checkbox"
               onChange={(e) => {
                 setVerbose(e.target.checked);
+                localStorage.setItem(VOICE_VERBOSE, e.target.checked);
               }}
             />
           </label>
