@@ -41,6 +41,7 @@ const VerticalControls = styled.div`
 `;
 
 export default function Main() {
+  const [newest, setNewest] = useState(null);
   const [newListings, setNewListings] = useState([]);
   const [oldListings, setOldListings] = useState([]);
   const [maxChaos, setMaxChaos] = useState(
@@ -62,7 +63,21 @@ export default function Main() {
   );
   const [lastSay, setLastSay] = useState(0);
 
+  const makeClickHandler = (listing) => () => {
+    navigator.clipboard.writeText(listing.whisper);
+    setNewListings((prevNewListings) =>
+      prevNewListings.filter(({ id }) => id !== listing.id)
+    );
+    setOldListings((prevOldListings) =>
+      trimListings([listing].concat(prevOldListings))
+    );
+  };
+
   useEffect(() => {
+    if (Notification.permission !== "granted") {
+      Notification.requestPermission();
+    }
+
     const bb = async () => {
       const voices = await getVoices();
       setVoices(voices);
@@ -81,33 +96,42 @@ export default function Main() {
         timeStamp: Date.now(),
       };
 
+      setNewest(listing);
       setNewListings((prevNewListings) =>
         trimListings([listing].concat(prevNewListings))
       );
       setOldListings((prevOldListings) => trimListings(prevOldListings));
     });
+
+    socket.on("message", (message) => {
+      setMessage(message);
+    });
   }, []);
 
   useEffect(() => {
-    if (newListings.length === 0) {
+    if (!newest) {
       return;
     }
     if (Date.now() - lastSay < VOICE_COOLDOWN_MS) {
       return;
     }
-
-    const newest = filterListingsChaos([newListings[0]], maxChaos).pop();
-
-    if (newest) {
-      const phrase = makePhrase(newest);
-      if (verbose && phrase) {
-        sayWithVoice(phrase, voice, voiceVolume);
-      } else {
-        sayWithVoice(nonVerbosePhrase, voice, voiceVolume);
-      }
-      setLastSay(Date.now());
+    if (filterListingsChaos([newest], maxChaos).length === 0) {
+      return;
     }
-  }, [newListings]);
+
+    const phrase = makePhrase(newest);
+    if (verbose && phrase) {
+      sayWithVoice(phrase, voice, voiceVolume);
+    } else {
+      sayWithVoice(nonVerbosePhrase, voice, voiceVolume);
+    }
+    setLastSay(Date.now());
+
+    // if (Notification.permission === "granted") {
+    //   const notification = new Notification(phrase);
+    //   notification.onclick = makeClickHandler(newest);
+    // }
+  }, [newest]);
 
   return (
     <Container>
@@ -132,20 +156,19 @@ export default function Main() {
             <Listing
               listing={listing}
               key={listing.id}
-              onClick={() => {
-                setNewListings((prevNewListings) =>
-                  prevNewListings.filter(({ id }) => id !== listing.id)
-                );
-                setOldListings((prevOldListings) =>
-                  trimListings([listing].concat(prevOldListings))
-                );
-              }}
+              onClick={makeClickHandler(listing)}
             />
           ))}
         </div>
         <div>
           {filterListingsChaos(oldListings, maxChaos).map((listing) => (
-            <Listing listing={listing} key={listing.id} onClick={() => {}} />
+            <Listing
+              listing={listing}
+              key={listing.id}
+              onClick={() => {
+                navigator.clipboard.writeText(listing.whisper);
+              }}
+            />
           ))}
         </div>
         <VerticalControls>

@@ -22,8 +22,7 @@ const hydrate = async (id, query) => {
   const url = `https://www.pathofexile.com/api/trade/fetch/${id}?query=${query}`;
   const res = await fetch(url, requestOptions);
   if (res.status > 299) {
-    console.log("res", url, res);
-    return [];
+    throw res;
   }
   const resJson = await res.json();
   const { result } = resJson;
@@ -44,14 +43,28 @@ const addEvents = (client, io, extra = {}, retry) => {
       }
       itemIds.forEach(async (itemId) => {
         const query = extra?.url?.split("/").pop();
-        const listings = await hydrate(itemId, query);
-        listings.forEach((listing) => {
-          io.emit("new-listing", {
-            ...listing,
-            ...extra,
-            id: uuid(),
+        try {
+          const listings = await hydrate(itemId, query);
+          listings.forEach((listing) => {
+            io.emit("new-listing", {
+              ...listing,
+              ...extra,
+              id: uuid(),
+            });
           });
-        });
+        } catch (e) {
+          io.emit(
+            JSON.stringify(
+              {
+                ...extra,
+                status: e.status,
+                statusText: e.statusText,
+              },
+              null,
+              "  "
+            )
+          );
+        }
       });
     } catch (e) {
       console.log("couldn't parse msg", e);
@@ -65,8 +78,22 @@ const addEvents = (client, io, extra = {}, retry) => {
   });
 };
 
-const watchSearches = async (searches, io = null) => {
-  let counter = 0;
+const makeClient = (search, io, message) => {
+  const { url, note } = search;
+  console.log(`Connecting ${note} - ${message}`);
+  const wsUrl = url.replace(
+    "https://www.pathofexile.com/trade/search/",
+    "wss://www.pathofexile.com/api/trade/live/"
+  );
+
+  const client = new WebSocket(wsUrl, requestOptions);
+
+  addEvents(client, io, search, () => {
+    setTimeout(() => makeClient(), 70000);
+  });
+};
+
+const watchSearches = (searches, io = null) => {
   if (searches.length > 20) {
     console.log(`20 search limit. You have ${searches.length}`);
     return;
@@ -74,29 +101,11 @@ const watchSearches = async (searches, io = null) => {
 
   console.log(`Starting ${searches.length} live searches`);
 
-  for (const search of searches) {
-    const { url, note } = search;
-
-    const wsUrl = url.replace(
-      "https://www.pathofexile.com/trade/search/",
-      "wss://www.pathofexile.com/api/trade/live/"
-    );
-
-    function makeClient() {
-      console.log(`Connecting ${note}`);
-      const client = new WebSocket(wsUrl, requestOptions);
-
-      addEvents(client, io, search, () => {
-        setTimeout(() => makeClient(), 70000);
-      });
-    }
-
+  searches.forEach((search, i) => {
     setTimeout(() => {
-      makeClient();
-    }, counter * 5000);
-
-    counter++;
-  }
+      makeClient(search, io, `${i + 1}/${searches.length}`);
+    }, i * 2000);
+  });
 };
 
 module.exports = {

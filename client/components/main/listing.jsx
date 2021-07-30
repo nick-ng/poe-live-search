@@ -7,7 +7,7 @@ const Container = styled.div`
   font-family: "Comic Sans MS", sans-serif;
   margin-bottom: 0.5em;
   display: grid;
-  grid-template-columns: auto auto auto auto auto;
+  grid-template-columns: auto repeat(5, 1fr);
   gap: 0.5em;
   align-items: center;
 `;
@@ -30,13 +30,14 @@ const Price = styled.div`
 `;
 
 export default function Listing({ listing, onClick }) {
-  const { account, note, price, whisper } = listing;
+  const { account, note, price, timeStamp, whisper } = listing;
+  const date = new Date(timeStamp);
+
   return (
     <Container>
       <ColoredButton
         buttonColor={hashStringToColor(account.name)}
         onClick={() => {
-          navigator.clipboard.writeText(whisper);
           if (typeof onClick === "function") {
             onClick();
           }
@@ -54,6 +55,7 @@ export default function Listing({ listing, onClick }) {
       <div>{account.lastCharacterName}</div>
       <div>{account.name}</div>
       <div>{note}</div>
+      <div>{`${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`}</div>
     </Container>
   );
 }
