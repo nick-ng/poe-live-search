@@ -2,12 +2,7 @@ const WebSocket = require("ws");
 const fetch = require("node-fetch");
 const { v4: uuid } = require("uuid");
 
-const sleep = (ms, output = null) =>
-  new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve(output);
-    });
-  });
+const clients = [];
 
 const requestOptions = {
   headers: {
@@ -17,6 +12,13 @@ const requestOptions = {
     host: "www.pathofexile.com",
   },
 };
+
+const sleep = (ms, output = null) =>
+  new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve(output);
+    });
+  });
 
 const hydrate = async (id, query) => {
   const url = `https://www.pathofexile.com/api/trade/fetch/${id}?query=${query}`;
@@ -91,6 +93,8 @@ const makeClient = (search, io, message) => {
   addEvents(client, io, search, () => {
     setTimeout(() => makeClient(), 70000);
   });
+
+  clients.push(client);
 };
 
 const watchSearches = (searches, io = null) => {

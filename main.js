@@ -7,7 +7,7 @@ const fetch = require("node-fetch");
 const socketio = require("socket.io");
 const fs = require("fs");
 
-const { watchSearches } = require("./websocket");
+const { watchSearches } = require("./server/websocket");
 
 const app = express();
 const server = http.createServer(app);

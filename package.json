@@ -6,8 +6,8 @@
   "scripts": {
     "build": "cross-env NODE_ENV=production webpack",
     "dev-build": "cross-env NODE_ENV=development webpack",
-    "dev-serve": "cross-env NODE_ENV=development nodemon --ignore ./webpack.config.js --ignore client/ --ignore dist/ --delay 2 ./server.js",
-    "start": "nodemon --delay 5 server.js",
+    "dev-serve": "cross-env NODE_ENV=development nodemon --ignore ./webpack.config.js --ignore client/ --ignore dist/ --delay 2 ./main.js",
+    "start": "nodemon --delay 5 ./main.js",
     "prettier-check": "prettier -c \"**/*.js\"",
     "prettier-fix": "prettier --write \"**/*.js\"",
     "test": "echo \"Error: no test specified\" && exit 1"

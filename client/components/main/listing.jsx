@@ -16,7 +16,6 @@ const ColoredButton = styled.button.attrs((props) => ({
   style: { backgroundColor: props.buttonColor },
 }))`
   font-size: 1.5em;
-  font-family: "Comic Sans MS", sans-serif;
   color: white;
   border: 1px solid white;
   font-weight: bold;
@@ -26,7 +25,6 @@ const ColoredButton = styled.button.attrs((props) => ({
 
 const Price = styled.div`
   font-size: 1.5em;
-  font-family: "Comic Sans MS", sans-serif;
 `;
 
 export default function Listing({ listing, onClick }) {
