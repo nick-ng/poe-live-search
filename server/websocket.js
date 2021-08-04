@@ -2,7 +2,7 @@ const WebSocket = require("ws");
 const fetch = require("node-fetch");
 const { v4: uuid } = require("uuid");
 
-const clients = [];
+let clients = [];
 
 const requestOptions = {
   headers: {
@@ -81,6 +81,15 @@ const addEvents = (client, io, extra = {}, retry) => {
 };
 
 const makeClient = (search, io, message) => {
+  /**
+   * {
+    type = "id",
+    searchId = "",
+    note = "",
+    term = "",
+    maxChaos = "",
+  }
+   */
   const { url, note } = search;
   console.log(`Connecting ${note} - ${message}`);
   const wsUrl = url.replace(
@@ -97,11 +106,19 @@ const makeClient = (search, io, message) => {
   clients.push(client);
 };
 
-const watchSearches = (searches, io = null) => {
+const watchSearches = async (searches, io = null) => {
   if (searches.length > 20) {
     console.log(`20 search limit. You have ${searches.length}`);
     return;
   }
+
+  clients.forEach((client) => {
+    client.close();
+  });
+
+  await sleep(5000);
+
+  clients = [];
 
   console.log(`Starting ${searches.length} live searches`);
 

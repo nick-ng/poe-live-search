@@ -40,31 +40,22 @@ const makeSearchBody = ({ term, maxChaos }) => ({
 const fetchSearchId = async (term, maxChaos = 999) => {
   const searchBody = makeSearchBody({ term, maxChaos });
 
-  console.log("searchBody", searchBody);
-
   const body = JSON.stringify(searchBody);
 
-  console.log("body.length", body.length);
-
   const res = await fetch(
-    `https://www.pathofexile.com/api/trade/search/Expedition`,
+    `https://www.pathofexile.com/api/trade/search/${process.env.LEAGUE}`,
     {
       ...requestOptions,
       method: "POST",
-      referer: "https://www.pathofexile.com/trade/search/Expedition",
+      referer: `https://www.pathofexile.com/trade/search/${process.env.LEAGUE}`,
       body,
       mode: "cors",
     }
   );
 
-  console.log("res", res);
-  console.log("res.headers", res.headers);
+  const resJson = await res.json();
 
-  const resBody = await res.text();
-
-  // const resJson = await res.json();
-
-  return resBody;
+  return resJson;
 };
 
 module.exports = {

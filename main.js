@@ -17,10 +17,20 @@ const io = socketio(server);
 const port = process.env.PORT || 9362;
 app.set("port", port);
 
+router.post("/api/searches", async (req, res, next) => {
+  console.log("req.body", req.body);
+  console.log("req.body.length", req.body.length);
+
+  watchSearches(req.body, io);
+
+  res.sendStatus(201);
+});
+
 app.use(compression());
 app.use(express.json());
 app.use(router);
 app.use(express.static("dist"));
+
 app.use((req, res) => {
   res.sendFile(path.resolve(__dirname, "./dist/index.html"));
 });

@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import io from "socket.io-client";
 
+import SearchManager from "../search-manager";
 import Listing from "./listing";
 import VoiceChooser from "./voice-chooser";
 import { getVoices, sayWithVoice, makePhrase } from "./text-to-speech";
-import { trimListings, filterListingsChaos } from "./utils";
+import { trimListings, filterListingsChaos } from "../utils";
 
 const MAX_CHAOS = "MAX_CHAOS";
 const VOICE_CHARACTER = "VOICE_CHARACTER";
@@ -14,7 +15,9 @@ const VOICE_VERBOSE = "VOICE_VERBOSE";
 const VOICE_NONVERBOSE_PHRASE = "VOICE_NONVERBOSE_PHRASE";
 const VOICE_COOLDOWN_MS = 1000;
 
-const Container = styled.div``;
+const Container = styled.div`
+  font-family: sans-serif;
+`;
 
 const Columns = styled.div`
   display: grid;
@@ -29,6 +32,9 @@ const HorizontalControls = styled.div`
 const VerticalControls = styled.div`
   display: flex;
   flex-direction: column;
+  overflow-y: scroll;
+  height: 90vh;
+  padding-right: 0.5em;
 
   & > * {
     margin-bottom: 0.5em;
@@ -53,7 +59,7 @@ export default function Main() {
     localStorage.getItem(VOICE_CHARACTER) || ""
   );
   const [voiceVolume, setVoiceVolume] = useState(
-    parseFloat(localStorage.getItem(VOICE_VOLUME)) || 0.3
+    parseFloat(localStorage.getItem(VOICE_VOLUME) ?? 0.3)
   );
   const [verbose, setVerbose] = useState(
     localStorage.getItem(VOICE_VERBOSE) === "true"
@@ -136,20 +142,6 @@ export default function Main() {
   return (
     <Container>
       <h1>Trade Search Listings</h1>
-      <HorizontalControls>
-        <label>
-          Max Chaos:{" "}
-          <input
-            type="number"
-            onChange={(e) => {
-              const newMaxChaos = parseInt(e.target.value, 10);
-              setMaxChaos(newMaxChaos);
-              localStorage.setItem(MAX_CHAOS, newMaxChaos);
-            }}
-            value={maxChaos}
-          />
-        </label>
-      </HorizontalControls>
       <Columns>
         <div>
           {filterListingsChaos(newListings, maxChaos).map((listing) => (
@@ -172,6 +164,18 @@ export default function Main() {
           ))}
         </div>
         <VerticalControls>
+          <label>
+            Max Chaos:&nbsp;
+            <input
+              type="number"
+              onChange={(e) => {
+                const newMaxChaos = parseInt(e.target.value, 10);
+                setMaxChaos(newMaxChaos);
+                localStorage.setItem(MAX_CHAOS, newMaxChaos);
+              }}
+              value={maxChaos}
+            />
+          </label>
           <VoiceChooser
             voices={voices}
             voice={voice}
@@ -181,7 +185,7 @@ export default function Main() {
             }}
           />
           <label>
-            Volume:{" "}
+            Volume:&nbsp;
             <input
               value={voiceVolume}
               type="number"
@@ -195,7 +199,7 @@ export default function Main() {
             />
           </label>
           <label>
-            Descriptive:{" "}
+            Descriptive:&nbsp;
             <input
               checked={verbose}
               type="checkbox"
@@ -206,7 +210,7 @@ export default function Main() {
             />
           </label>
           <label>
-            Non-Descriptive Phrase:{" "}
+            Non-Descriptive Phrase:&nbsp;
             <input
               value={nonVerbosePhrase}
               type="text"
@@ -216,9 +220,10 @@ export default function Main() {
               }}
             />
           </label>
+          <SearchManager />
+          <pre>{message}</pre>
         </VerticalControls>
       </Columns>
-      <pre>{message}</pre>
     </Container>
   );
 }

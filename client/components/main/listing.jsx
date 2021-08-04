@@ -1,15 +1,16 @@
 import React from "react";
 import styled from "styled-components";
 
-import { hashStringToColor } from "./utils";
+import { hashStringToColor, formatTime } from "../utils";
 
 const Container = styled.div`
-  font-family: "Comic Sans MS", sans-serif;
-  margin-bottom: 0.5em;
-  display: grid;
-  grid-template-columns: auto repeat(5, 1fr);
-  gap: 0.5em;
-  align-items: center;
+  margin-bottom: 1em;
+`;
+
+const Columns = styled.div`
+  margin: 0.5em 0.5em 0;
+  display: flex;
+  justify-content: space-between;
 `;
 
 const ColoredButton = styled.button.attrs((props) => ({
@@ -21,11 +22,11 @@ const ColoredButton = styled.button.attrs((props) => ({
   font-weight: bold;
   -webkit-text-stroke: 1px black;
   overflow-x: hidden;
+  width: 100%;
+  padding: 0.5em 0;
 `;
 
-const Price = styled.div`
-  font-size: 1.5em;
-`;
+const Price = styled.div``;
 
 export default function Listing({ listing, onClick }) {
   const { account, note, price, timeStamp, whisper } = listing;
@@ -43,17 +44,22 @@ export default function Listing({ listing, onClick }) {
       >
         Whisper
       </ColoredButton>
-      {price && price.amount ? (
-        <Price>
-          {price.amount} {price.currency}
-        </Price>
-      ) : (
-        <div>No Price</div>
-      )}
-      <div>{account.lastCharacterName}</div>
-      <div>{account.name}</div>
-      <div>{note}</div>
-      <div>{`${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`}</div>
+      <Columns>
+        {price && price.amount ? (
+          <Price>
+            {price.amount} {price.currency}
+          </Price>
+        ) : (
+          <div>No Price</div>
+        )}
+        <div>
+          {account.lastCharacterName} ({account.name})
+        </div>
+      </Columns>
+      <Columns>
+        <div>{note}</div>
+        <div>Time Listed: {formatTime(date)}</div>
+      </Columns>
     </Container>
   );
 }

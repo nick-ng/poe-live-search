@@ -16,7 +16,13 @@ export const filterListingsChaos = (listings, maxChaos = 100) => {
   });
 };
 
-function djb2(str) {
+export const formatTime = (date) => {
+  const minutes = `${date.getMinutes()}`.padStart(2, "0");
+  const seconds = `${date.getSeconds()}`.padStart(2, "0");
+  return `${date.getHours()}:${minutes}:${seconds}`;
+};
+
+export function djb2(str) {
   var hash = 5381;
   for (var i = 0; i < str.length; i++) {
     hash = (hash << 5) + hash + str.charCodeAt(i); /* hash * 33 + c */
