@@ -6,7 +6,7 @@ import SearchManager from "../search-manager";
 import Listing from "./listing";
 import VoiceChooser from "./voice-chooser";
 import { getVoices, sayWithVoice, makePhrase } from "./text-to-speech";
-import { trimListings, filterListingsChaos } from "../utils";
+import { trimListings, filterListingsChaos, formatTime, djb2 } from "../utils";
 
 const MAX_CHAOS = "MAX_CHAOS";
 const VOICE_CHARACTER = "VOICE_CHARACTER";
@@ -53,7 +53,9 @@ export default function Main() {
   const [maxChaos, setMaxChaos] = useState(
     parseInt(localStorage.getItem(MAX_CHAOS) || 100, 10)
   );
-  const [message, setMessage] = useState("Please wait.");
+  const [messages, setMessages] = useState([
+    { date: new Date(), message: "Please wait." },
+  ]);
   const [voices, setVoices] = useState([]);
   const [voice, setVoice] = useState(
     localStorage.getItem(VOICE_CHARACTER) || ""
@@ -93,12 +95,16 @@ export default function Main() {
     const socket = io();
 
     socket.on("connect", () => {
-      setMessage("Connected");
+      setMessages((prevMessages) =>
+        [{ date: new Date(), message: "Connected" }].concat(prevMessages)
+      );
     });
 
     socket.on("new-listing", (data) => {
       const listing = {
-        ...data,
+        ...data.listing,
+        item: data.item,
+        id: data.id,
         timeStamp: Date.now(),
       };
 
@@ -109,8 +115,10 @@ export default function Main() {
       setOldListings((prevOldListings) => trimListings(prevOldListings));
     });
 
-    socket.on("message", (message) => {
-      setMessage(message);
+    socket.on("message", (newMessage) => {
+      setMessages((prevMessages) =>
+        [{ date: new Date(), message: newMessage }].concat(prevMessages)
+      );
     });
   }, []);
 
@@ -221,7 +229,13 @@ export default function Main() {
             />
           </label>
           <SearchManager />
-          <pre>{message}</pre>
+          <div>
+            {messages.map((message) => (
+              <pre key={djb2(JSON.stringify(message))}>
+                {formatTime(message.date)}: {message.message}
+              </pre>
+            ))}
+          </div>
         </VerticalControls>
       </Columns>
     </Container>

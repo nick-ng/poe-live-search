@@ -10,6 +10,10 @@ const requestOptions = {
   },
 };
 
+const getLeague = async () => {
+  return process.env.LEAGUE;
+};
+
 const makeSearchBody = ({ term, maxChaos }) => ({
   query: {
     status: {
@@ -26,6 +30,7 @@ const makeSearchBody = ({ term, maxChaos }) => ({
       trade_filters: {
         filters: {
           price: {
+            min: 0.1,
             max: maxChaos,
           },
         },
@@ -42,12 +47,14 @@ const fetchSearchId = async (term, maxChaos = 999) => {
 
   const body = JSON.stringify(searchBody);
 
+  const league = await getLeague();
+
   const res = await fetch(
-    `https://www.pathofexile.com/api/trade/search/${process.env.LEAGUE}`,
+    `https://www.pathofexile.com/api/trade/search/${league}`,
     {
       ...requestOptions,
       method: "POST",
-      referer: `https://www.pathofexile.com/trade/search/${process.env.LEAGUE}`,
+      referer: `https://www.pathofexile.com/trade/search/${league}`,
       body,
       mode: "cors",
     }
@@ -60,6 +67,7 @@ const fetchSearchId = async (term, maxChaos = 999) => {
 
 module.exports = {
   requestOptions,
+  getLeague,
   makeSearchBody,
   fetchSearchId,
 };

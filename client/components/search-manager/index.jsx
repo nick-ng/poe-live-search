@@ -30,7 +30,10 @@ const Searches = styled.div`
 
 export default function SearchManager() {
   const [searches, setSearches] = useState(
-    JSON.parse(localStorage.getItem(SAVED_SEARCHES) || "{}")
+    JSON.parse(
+      localStorage.getItem(SAVED_SEARCHES) ||
+        '{"12345": {"active": true, "type": "id", "searchId": "NK6Ec5", "note": "Tabula", "term": "", "maxChaos": ""}}'
+    )
   );
 
   const searchCount = Object.values(searches).filter((a) => a.active).length;
@@ -52,11 +55,33 @@ export default function SearchManager() {
     localStorage.setItem(SAVED_SEARCHES, JSON.stringify(searches));
   }, [searches]);
 
+  useEffect(() => {
+    if (searchCount > 0) {
+      restartSearches();
+    }
+
+    return () => {
+      fetch("/api/searches/stop", {
+        method: "POST",
+        headers: {},
+      });
+    };
+  }, []);
+
   return (
     <Container>
       <Info>
         <button onClick={restartSearches}>Restart Search</button>
-        <button>Stop Search</button>
+        <button
+          onClick={() => {
+            fetch("/api/searches/stop", {
+              method: "POST",
+              headers: {},
+            });
+          }}
+        >
+          Stop Search
+        </button>
       </Info>
       <Info>
         <button

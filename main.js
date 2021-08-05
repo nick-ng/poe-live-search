@@ -7,7 +7,7 @@ const fetch = require("node-fetch");
 const socketio = require("socket.io");
 const fs = require("fs");
 
-const { watchSearches } = require("./server/websocket");
+const { stopSearches, watchSearches } = require("./server/websocket");
 
 const app = express();
 const server = http.createServer(app);
@@ -18,12 +18,15 @@ const port = process.env.PORT || 9362;
 app.set("port", port);
 
 router.post("/api/searches", async (req, res, next) => {
-  console.log("req.body", req.body);
-  console.log("req.body.length", req.body.length);
-
   watchSearches(req.body, io);
 
   res.sendStatus(201);
+});
+
+router.post("/api/searches/stop", async (req, res, next) => {
+  await stopSearches(io);
+
+  res.sendStatus(200);
 });
 
 app.use(compression());
@@ -34,20 +37,6 @@ app.use(express.static("dist"));
 app.use((req, res) => {
   res.sendFile(path.resolve(__dirname, "./dist/index.html"));
 });
-
-const main = async () => {
-  try {
-    fs.accessSync("./searches.json");
-  } catch (e) {
-    fs.copyFileSync("./searches.json.example", "./searches.json");
-  }
-
-  const searches = require("./searches.json");
-
-  watchSearches(searches, io);
-};
-
-main();
 
 server.listen(app.get("port"), () => {
   console.log(`${new Date()} Website server listening on ${port}.`);

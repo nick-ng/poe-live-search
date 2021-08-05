@@ -8,11 +8,12 @@ const sleep = (ms, output = null) =>
   });
 
 export const makePhrase = (listing) => {
+  const itemPart = listing.note || listing.item.name || listing.item.typeLine;
   if (listing.price) {
-    return `${listing.price.amount} ${listing.price.currency} for ${listing.note}`;
+    return `${listing.price.amount} ${listing.price.currency} for ${itemPart}`;
   }
 
-  return listing.note;
+  return itemPart;
 };
 
 export const getVoices = async () => {

@@ -2,6 +2,8 @@ const WebSocket = require("ws");
 const fetch = require("node-fetch");
 const { v4: uuid } = require("uuid");
 
+const { getLeague, fetchSearchId } = require("./utils");
+
 let clients = [];
 
 const requestOptions = {
@@ -29,7 +31,7 @@ const hydrate = async (id, query) => {
   const resJson = await res.json();
   const { result } = resJson;
   if (Array.isArray(result)) {
-    return result.map((a) => a.listing);
+    return result;
   }
   console.log("result", result);
   return [];
@@ -80,7 +82,7 @@ const addEvents = (client, io, extra = {}, retry) => {
   });
 };
 
-const makeClient = (search, io, message) => {
+const makeClient = async (search, io, message) => {
   /**
    * {
     type = "id",
@@ -90,14 +92,21 @@ const makeClient = (search, io, message) => {
     maxChaos = "",
   }
    */
-  const { url, note } = search;
-  console.log(`Connecting ${note} - ${message}`);
-  const wsUrl = url.replace(
-    "https://www.pathofexile.com/trade/search/",
-    "wss://www.pathofexile.com/api/trade/live/"
-  );
+  const { type, searchId, note, term, maxChaos } = search;
+  const league = await getLeague();
+  let wsUrl = "";
+
+  if (type === "id") {
+    wsUrl = `wss://www.pathofexile.com/api/trade/live/${league}/${searchId}`;
+  } else {
+    const res = await fetchSearchId(term, maxChaos);
+    wsUrl = `wss://www.pathofexile.com/api/trade/live/${league}/${res.id}`;
+  }
 
   const client = new WebSocket(wsUrl, requestOptions);
+  client.onopen = () => {
+    io.emit("message", `Connected ${JSON.stringify(search, null, "  ")}`);
+  };
 
   addEvents(client, io, search, () => {
     setTimeout(() => makeClient(), 70000);
@@ -106,15 +115,26 @@ const makeClient = (search, io, message) => {
   clients.push(client);
 };
 
-const watchSearches = async (searches, io = null) => {
+const stopSearches = (io) => {
+  return Promise.all(
+    clients.map((client) => {
+      client.close();
+      return new Promise((resolve, _reject) => {
+        io.emit("message", "client stopped");
+        client.onclose = resolve;
+      });
+    })
+  );
+};
+
+const watchSearches = async (searches, io) => {
   if (searches.length > 20) {
     console.log(`20 search limit. You have ${searches.length}`);
+    io.emit("message", `20 search limit. You have ${searches.length}`);
     return;
   }
 
-  clients.forEach((client) => {
-    client.close();
-  });
+  await stopSearches(io);
 
   await sleep(5000);
 
@@ -131,5 +151,6 @@ const watchSearches = async (searches, io = null) => {
 
 module.exports = {
   requestOptions,
+  stopSearches,
   watchSearches,
 };

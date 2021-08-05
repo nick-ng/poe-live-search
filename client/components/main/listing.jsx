@@ -29,7 +29,7 @@ const ColoredButton = styled.button.attrs((props) => ({
 const Price = styled.div``;
 
 export default function Listing({ listing, onClick }) {
-  const { account, note, price, timeStamp, whisper } = listing;
+  const { account, note, price, timeStamp, whisper, item } = listing;
   const date = new Date(timeStamp);
 
   return (
@@ -57,7 +57,7 @@ export default function Listing({ listing, onClick }) {
         </div>
       </Columns>
       <Columns>
-        <div>{note}</div>
+        <div>{note || item.name || item.typeLine}</div>
         <div>Time Listed: {formatTime(date)}</div>
       </Columns>
     </Container>
