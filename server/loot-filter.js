@@ -40,7 +40,7 @@ const sfhobitUberPath = path.resolve(
   "SovUber.filter"
 );
 
-const writeNeversinkFilters = (filter) => {
+const writeFilters = (filter, extraPath) => {
   const neversinkStrict = fs.readFileSync(neversinkStrictPath);
   const date = new Date();
 
@@ -57,6 +57,12 @@ const writeNeversinkFilters = (filter) => {
     path.resolve(__dirname, "..", "filters", `zz_strictplus_latest.filter`),
     `${filter}${neversinkStrict}`
   );
+  if (extraPath) {
+    writeFileSync(
+      path.resolve(extraPath, `zz_strictplus_latest.filter`),
+      `${filter}${neversinkStrict}`
+    );
+  }
 
   const neversinkVeryStrict = fs.readFileSync(neversinkVeryStrictPath);
   writeFileSync(
@@ -72,6 +78,12 @@ const writeNeversinkFilters = (filter) => {
     path.resolve(__dirname, "..", "filters", `zz_verystrictplus_latest.filter`),
     `${filter}${neversinkVeryStrict}`
   );
+  if (extraPath) {
+    writeFileSync(
+      path.resolve(extraPath, `zz_verystrictplus_latest.filter`),
+      `${filter}${neversinkVeryStrict}`
+    );
+  }
 
   const sfhobitUber = fs.readFileSync(sfhobitUberPath);
   writeFileSync(
@@ -87,9 +99,15 @@ const writeNeversinkFilters = (filter) => {
     path.resolve(__dirname, "..", "filters", `zz_gigastrict_latest.filter`),
     `${filter}${sfhobitUber}`
   );
+  if (extraPath) {
+    writeFileSync(
+      path.resolve(extraPath, `zz_gigastrict_latest.filter`),
+      `${filter}${sfhobitUber}`
+    );
+  }
 };
 
-const makeLootFilter = (sortedItems) => {
+const makeLootFilter = (sortedItems, extraPath = null) => {
   //   console.log("sortedItems", sortedItems);
   const { uniques } = sortedItems;
 
@@ -123,7 +141,7 @@ Hide
 
   const filter = `${uniquesFilter}`;
 
-  writeNeversinkFilters(filter);
+  writeFilters(filter, extraPath);
 };
 
 module.exports = {

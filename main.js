@@ -40,7 +40,7 @@ router.get("/api/poe-ninja", async (req, res, next) => {
 
 router.get("/api/loot-filter", async (req, res, next) => {
   const { minChaos: minChaos } = req.query;
-  const results = await fetchPoeNinja(minChaos);
+  const results = await fetchPoeNinja(minChaos, process.env.POE_SETTINGS_PATH);
   makeLootFilter(results);
 
   res.sendStatus(200);
