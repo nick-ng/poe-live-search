@@ -7,10 +7,11 @@
     "build": "cross-env NODE_ENV=production webpack",
     "dev-build": "cross-env NODE_ENV=development webpack",
     "dev-serve": "cross-env NODE_ENV=development nodemon --ignore ./webpack.config.js --ignore client/ --ignore dist/ --delay 2 ./main.js",
-    "start": "nodemon --delay 5 ./main.js",
+    "start": "node ./main.js",
     "prettier-check": "prettier -c \"**/*.js\"",
     "prettier-fix": "prettier --write \"**/*.js\"",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "make-filters": "node ./make-filters.js"
   },
   "repository": {
     "type": "git",

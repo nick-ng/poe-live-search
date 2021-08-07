@@ -83,15 +83,10 @@ const addEvents = (client, io, extra = {}, retry) => {
 };
 
 const makeClient = async (search, io, message) => {
-  /**
-   * {
-    type = "id",
-    searchId = "",
-    note = "",
-    term = "",
-    maxChaos = "",
+  if (!search) {
+    io.emit("message", "Error making search");
   }
-   */
+
   const { type, searchId, note, term, maxChaos } = search;
   const league = await getLeague();
   let wsUrl = "";
