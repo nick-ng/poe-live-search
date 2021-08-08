@@ -8,8 +8,6 @@ const socketio = require("socket.io");
 const fs = require("fs");
 
 const { stopSearches, watchSearches } = require("./server/websocket");
-const { fetchPoeNinja } = require("./server/poe-ninja");
-const { makeLootFilter } = require("./server/loot-filter");
 
 const app = express();
 const server = http.createServer(app);
@@ -27,28 +25,6 @@ router.post("/api/searches", async (req, res, next) => {
 
 router.post("/api/searches/stop", async (req, res, next) => {
   await stopSearches(io);
-
-  res.sendStatus(200);
-});
-
-router.get("/api/poe-ninja", async (req, res, next) => {
-  const { minChaos: minChaos } = req.query;
-  const results = await fetchPoeNinja(minChaos);
-
-  res.json(results);
-});
-
-router.get("/api/loot-filter", async (req, res, next) => {
-  const { minChaos: minChaos } = req.query;
-  const results = await fetchPoeNinja(minChaos, process.env.POE_SETTINGS_PATH);
-  makeLootFilter(results);
-
-  res.sendStatus(200);
-});
-
-router.post("/api/loot-filter", async (req, res, next) => {
-  console.log("req.body", req.body);
-  makeLootFilter(req.body);
 
   res.sendStatus(200);
 });
