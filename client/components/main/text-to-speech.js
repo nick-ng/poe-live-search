@@ -4,7 +4,7 @@ const sleep = (ms, output = null) =>
   new Promise((resolve, reject) => {
     setTimeout(() => {
       resolve(output);
-    });
+    }, ms);
   });
 
 export const makePhrase = (listing) => {
