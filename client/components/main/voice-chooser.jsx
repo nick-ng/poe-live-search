@@ -9,6 +9,8 @@ export default function VoiceChooser({ voices, voice, onChange }) {
       const defaultVoice = voices.filter((a) => a.default);
       if (defaultVoice.length > 0) {
         onChange(defaultVoice.pop().voiceURI);
+      } else {
+        onChange(voices[0].voiceURI);
       }
     }
   }, [voices]);
