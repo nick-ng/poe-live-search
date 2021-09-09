@@ -3,7 +3,7 @@ import styled from "styled-components";
 import io from "socket.io-client";
 
 import SearchManager from "../search-manager";
-import Listing from "./listing";
+import Listing, { ColoredButton } from "./listing";
 import VoiceChooser from "./voice-chooser";
 import { getVoices, sayWithVoice, makePhrase } from "./text-to-speech";
 import { trimListings, filterListingsChaos, formatTime, djb2 } from "../utils";
@@ -21,7 +21,7 @@ const Container = styled.div`
 
 const Columns = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr auto;
+  grid-template-columns: 50px 1fr 1fr auto 50px;
   gap: 0.5em;
 `;
 
@@ -101,6 +101,7 @@ export default function Main() {
     });
 
     socket.on("new-listing", (data) => {
+      console.log("data", data);
       const listing = {
         ...data.listing,
         item: data.item,
@@ -147,12 +148,24 @@ export default function Main() {
     // }
   }, [newest]);
 
+  const filteredListings = filterListingsChaos(newListings, maxChaos);
+  const listing0 = filteredListings[0];
+
   return (
     <Container>
       <h1>Trade Search Listings</h1>
       <Columns>
+        {filteredListings.length > 0 ? (
+          <Listing
+            listing={listing0}
+            onClick={makeClickHandler(listing0)}
+            buttonOnly
+          />
+        ) : (
+          <div />
+        )}
         <div>
-          {filterListingsChaos(newListings, maxChaos).map((listing) => (
+          {filteredListings.map((listing) => (
             <Listing
               listing={listing}
               key={listing.id}
@@ -172,6 +185,15 @@ export default function Main() {
           ))}
         </div>
         <VerticalControls>
+          <button
+            onClick={() => {
+              fetch("/api/searches/test", {
+                method: "POST",
+              });
+            }}
+          >
+            Test
+          </button>
           <label>
             Max Chaos:&nbsp;
             <input
@@ -237,6 +259,15 @@ export default function Main() {
             ))}
           </div>
         </VerticalControls>
+        {filteredListings.length > 0 ? (
+          <Listing
+            listing={listing0}
+            onClick={makeClickHandler(listing0)}
+            buttonOnly
+          />
+        ) : (
+          <div />
+        )}
       </Columns>
     </Container>
   );

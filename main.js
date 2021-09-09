@@ -6,6 +6,7 @@ const http = require("http");
 const fetch = require("node-fetch");
 const socketio = require("socket.io");
 const fs = require("fs");
+const { v4: uuid } = require("uuid");
 
 const { stopSearches, watchSearches } = require("./server/websocket");
 
@@ -26,6 +27,26 @@ router.post("/api/searches", async (req, res, next) => {
 router.post("/api/searches/stop", async (req, res, next) => {
   await stopSearches(io);
 
+  res.sendStatus(200);
+});
+
+router.post("/api/searches/test", async (req, res, next) => {
+  const listing = {
+    account: { name: uuid() },
+    price: {
+      amount: 5,
+      currency: "chaos",
+    },
+    timeStamp: Date.now(),
+    whisper: "Hi",
+  };
+  io.emit("new-listing", {
+    listing,
+    item: {
+      name: "Dementophobia",
+    },
+    id: uuid(),
+  });
   res.sendStatus(200);
 });
 

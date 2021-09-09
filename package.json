@@ -7,6 +7,7 @@
     "build": "cross-env NODE_ENV=production webpack",
     "dev-build": "cross-env NODE_ENV=development webpack",
     "dev-serve": "cross-env NODE_ENV=development nodemon --ignore ./webpack.config.js --ignore client/ --ignore dist/ --delay 2 ./main.js",
+    "dev": "concurrently npm:dev-build npm:dev-serve",
     "start": "node ./main.js",
     "prettier-check": "prettier -c \"**/*.js\"",
     "prettier-fix": "prettier --write \"**/*.js\"",

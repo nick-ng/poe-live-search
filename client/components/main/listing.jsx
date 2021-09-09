@@ -13,7 +13,7 @@ const Columns = styled.div`
   justify-content: space-between;
 `;
 
-const ColoredButton = styled.button.attrs((props) => ({
+export const ColoredButton = styled.button.attrs((props) => ({
   style: { backgroundColor: props.buttonColor },
 }))`
   font-size: 1.5em;
@@ -28,9 +28,22 @@ const ColoredButton = styled.button.attrs((props) => ({
 
 const Price = styled.div``;
 
-export default function Listing({ listing, onClick }) {
+export default function Listing({ listing, onClick, buttonOnly }) {
   const { account, note, price, timeStamp, whisper, item } = listing;
   const date = new Date(timeStamp);
+
+  if (buttonOnly) {
+    return (
+      <ColoredButton
+        buttonColor={hashStringToColor(account.name)}
+        onClick={() => {
+          if (typeof onClick === "function") {
+            onClick();
+          }
+        }}
+      ></ColoredButton>
+    );
+  }
 
   return (
     <Container>
