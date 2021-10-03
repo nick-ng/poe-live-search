@@ -13,7 +13,10 @@ xoffset := VirtualScreenWidth / 2
 yoffset := VirtualScreenHeight / 2
 
 initGui() {
-Gui, Add, Button, h30 w80 ggoToHideout, Hideout
+Gui, Add, Button, h30 w80 gReply, Reply
+Gui, Add, Button, x89 y6 h30 w80 gThankYou, Thanks
+Gui, Add, Button, x168 y6 h30 w80 gSendMessage, Send
+Gui, Add, Button, x247 y6 h30 w80 ggoToHideout, Hideout
 Gui, +E0x20 +Lastfound +AlwaysOnTop -Caption +ToolWindow
 Gui, Show, y0
 return
@@ -32,6 +35,42 @@ goToHideout() {
   Sleep, 100
   Send ^{v}
   Sleep, 100
+  Send {Enter}
+  }
+  return
+}
+
+Reply() {
+  if WinExist("ahk_class POEWindowClass") {
+    if WinActive("ahk_class POEWindowClass") {
+    }
+    WinActivate
+    Sleep, 50
+    Send ^{Enter}
+  }
+    return
+}
+
+ThankYou()
+{
+  Clipboard := "ty"
+  if WinExist("ahk_class POEWindowClass") {
+    if WinActive("ahk_class POEWindowClass") {
+    }
+    WinActivate
+  Sleep, 50
+  Send ^{v}
+  }
+  return
+}
+
+SendMessage()
+{
+  if WinExist("ahk_class POEWindowClass") {
+    if WinActive("ahk_class POEWindowClass") {
+    }
+    WinActivate
+  Sleep, 50
   Send {Enter}
   }
   return
@@ -73,6 +112,15 @@ sendWhisperToPoE() {
 }
 return
 }
+
+PasteString(str)
+{
+  Clipboard := str
+  Sleep, 50
+  Send ^{v}
+  return
+}
+
 
 #IfWinActive ahk_class POEWindowClass
 
