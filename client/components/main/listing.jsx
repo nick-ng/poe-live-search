@@ -13,6 +13,26 @@ const Columns = styled.div`
   justify-content: space-between;
 `;
 
+const ProgressBar = styled.div`
+  height: 0.3rem;
+  position: relative;
+  border: 1px solid grey;
+  margin: 0 0 0.5rem;
+
+  &::after {
+    position: absolute;
+    content: " ";
+    background-color: grey;
+    height: 100%;
+    width: ${(props) => (props.grow ? "0%" : "100%")};
+    transition: width;
+    transition-duration: ${(props) => (props.grow ? "120s" : "0s")};
+    transition-timing-function: linear;
+    left: 0;
+    bottom: 0;
+  }
+`;
+
 export const ColoredButton = styled.button.attrs((props) => ({
   style: { backgroundColor: props.buttonColor },
 }))`

@@ -14,32 +14,44 @@ const getLeague = async () => {
   return process.env.LEAGUE;
 };
 
+// const makeSearchBody = ({ term, maxChaos }) => ({
+//   query: {
+//     status: {
+//       option: "online",
+//     },
+//     term: term,
+//     stats: [{ type: "and", filters: [], disabled: false }],
+//     filters: {
+//       trade_filters: {
+//         filters: {
+//           price: {
+//             min: 0.1,
+//             max: maxChaos,
+//             option: null,
+//           },
+//           disabled: false,
+//         },
+//       },
+//     },
+//   },
+//   sort: {
+//     price: "asc",
+//   },
+// });
+
 const makeSearchBody = ({ term, maxChaos }) => ({
   query: {
-    status: {
-      option: "online",
-    },
+    status: { option: "online" },
     term: term,
-    stats: [
-      {
-        type: "and",
-        filters: [],
-      },
-    ],
+    stats: [{ type: "and", filters: [], disabled: false }],
     filters: {
       trade_filters: {
-        filters: {
-          price: {
-            min: 0.1,
-            max: maxChaos,
-          },
-        },
+        filters: { price: { min: 0.1, max: maxChaos, option: null } },
+        disabled: false,
       },
     },
   },
-  sort: {
-    price: "asc",
-  },
+  sort: { price: "asc" },
 });
 
 const fetchSearchId = async (term, maxChaos = 999) => {
@@ -60,7 +72,11 @@ const fetchSearchId = async (term, maxChaos = 999) => {
     }
   );
 
+  console.log("fetchSearchId", res);
+
   const resJson = await res.json();
+
+  console.log("fetchSearchId json", resJson);
 
   return resJson;
 };

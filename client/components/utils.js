@@ -1,4 +1,4 @@
-export const trimListings = (listings, maxAgeMS = 600000) => {
+export const trimListings = (listings, maxAgeMS = 120000) => {
   return [...listings].filter((a) => Date.now() - a.timeStamp < maxAgeMS);
 };
 

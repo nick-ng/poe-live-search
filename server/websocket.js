@@ -24,11 +24,17 @@ const sleep = (ms, output = null) =>
 
 const hydrate = async (id, query) => {
   const url = `https://www.pathofexile.com/api/trade/fetch/${id}?query=${query}`;
-  const res = await fetch(url, requestOptions);
+  let res = null;
+  try {
+    res = await fetch(url, requestOptions);
+  } catch (e) {
+    console.log("hydrate e", e);
+  }
   if (res.status > 299) {
     throw res;
   }
   const resJson = await res.json();
+
   const { result } = resJson;
   if (Array.isArray(result)) {
     return result;
@@ -38,6 +44,7 @@ const hydrate = async (id, query) => {
 };
 
 const addEvents = (client, io, extra = {}, retry) => {
+  console.log("extra", extra);
   client.on("message", (msg) => {
     try {
       const msgJson = JSON.parse(msg);
@@ -75,7 +82,7 @@ const addEvents = (client, io, extra = {}, retry) => {
     }
   });
   client.on("error", (e) => {
-    console.log("error", extra.note, e.message);
+    console.log("error a", extra.note, e.message);
     if (typeof retry === "function") {
       retry();
     }
@@ -84,14 +91,14 @@ const addEvents = (client, io, extra = {}, retry) => {
 
 const makeClient = async (search, io, message) => {
   if (!search) {
-    io.emit("message", "Error making search");
+    console.error("Error making search", search);
   }
 
-  const { type, searchId, note, term, maxChaos } = search;
+  const { searchId, term, maxChaos } = search;
   const league = await getLeague();
   let wsUrl = "";
 
-  if (type === "id") {
+  if (searchId) {
     wsUrl = `wss://www.pathofexile.com/api/trade/live/${league}/${searchId}`;
   } else {
     const res = await fetchSearchId(term, maxChaos);
@@ -124,7 +131,7 @@ const stopSearches = (io) => {
 
 const watchSearches = async (searches, io) => {
   if (searches.length > 20) {
-    console.log(`20 search limit. You have ${searches.length}`);
+    console.error(`20 search limit. You have ${searches.length}`);
     io.emit("message", `20 search limit. You have ${searches.length}`);
     return;
   }

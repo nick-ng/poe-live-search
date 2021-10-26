@@ -28,16 +28,14 @@ const Label = styled.label`
   align-items: flex-start;
 `;
 
-const ActiveStyle = { backgroundColor: "blue", color: "white" };
-
 export default function SearchManager({ value, onChange, onDelete }) {
   const {
     active = false,
-    type = "id",
     searchId = "",
     note = "",
     term = "",
     maxChaos = "",
+    sound = "",
   } = value;
 
   const changeHandler = (key, a) => {
@@ -57,72 +55,65 @@ export default function SearchManager({ value, onChange, onDelete }) {
             changeHandler("active", !active);
           }}
         />
-        <button
-          onClick={() => {
-            changeHandler("type", "id");
-          }}
-          style={type === "id" ? ActiveStyle : {}}
-        >
-          ID
-        </button>
-        <button
-          onClick={() => {
-            changeHandler("type", "term");
-          }}
-          style={type === "term" ? ActiveStyle : {}}
-        >
-          Term
-        </button>
+        <div>Active</div>
         <button onClick={onDelete}>Delete</button>
       </HorizontalControls>
-      {type === "id" ? (
-        <Controls>
-          <Label>
-            <div>Search ID</div>
-            <input
-              type="text"
-              value={searchId}
-              onChange={(e) => {
-                changeHandler("searchId", e.target.value);
-              }}
-            />
-          </Label>
-          <Label>
-            <div>Note</div>
-            <input
-              type="text"
-              value={note}
-              onChange={(e) => {
-                changeHandler("note", e.target.value);
-              }}
-            />
-          </Label>
-        </Controls>
-      ) : (
-        <Controls>
-          <Label>
-            <div>Search Term</div>
-            <input
-              type="text"
-              value={term}
-              onChange={(e) => {
-                changeHandler("term", e.target.value);
-              }}
-            />
-          </Label>
-          <Label>
-            <div>Max Chaos</div>
-            <input
-              style={{ textAlign: "right" }}
-              type="number"
-              value={maxChaos}
-              onChange={(e) => {
-                changeHandler("maxChaos", parseInt(e.target.value, 10));
-              }}
-            />
-          </Label>
-        </Controls>
-      )}
+
+      <Controls>
+        <Label>
+          <div>Search ID</div>
+          <input
+            type="text"
+            value={searchId}
+            onChange={(e) => {
+              changeHandler("searchId", e.target.value);
+            }}
+          />
+        </Label>
+        <Label>
+          <div>Note</div>
+          <input
+            type="text"
+            value={note}
+            onChange={(e) => {
+              changeHandler("note", e.target.value);
+            }}
+          />
+        </Label>
+
+        <Label>
+          <div>Search Term</div>
+          <input
+            type="text"
+            value={term}
+            onChange={(e) => {
+              changeHandler("term", e.target.value);
+            }}
+          />
+        </Label>
+        <Label>
+          <div>Max Chaos</div>
+          <input
+            style={{ textAlign: "right" }}
+            type="number"
+            value={maxChaos}
+            onChange={(e) => {
+              changeHandler("maxChaos", parseInt(e.target.value, 10));
+            }}
+          />
+        </Label>
+        <Label>
+          <div>Sound</div>
+          <input
+            type="text"
+            value={sound}
+            onChange={(e) => {
+              changeHandler("sound", e.target.value);
+            }}
+          />
+        </Label>
+        <div>(C4 - C5)</div>
+      </Controls>
     </Container>
   );
 }

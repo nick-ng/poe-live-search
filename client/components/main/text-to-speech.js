@@ -10,7 +10,7 @@ const sleep = (ms, output = null) =>
 export const makePhrase = (listing) => {
   const itemPart = listing.note || listing.item.name || listing.item.typeLine;
   if (listing.price) {
-    return `${listing.price.amount} ${listing.price.currency} for ${itemPart}`;
+    return `${itemPart} for ${listing.price.amount} ${listing.price.currency}`;
   }
 
   return itemPart;

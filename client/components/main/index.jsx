@@ -14,6 +14,7 @@ const VOICE_VOLUME = "VOICE_VOLUME";
 const VOICE_VERBOSE = "VOICE_VERBOSE";
 const VOICE_NONVERBOSE_PHRASE = "VOICE_NONVERBOSE_PHRASE";
 const VOICE_COOLDOWN_MS = 1000;
+const SOUND_VOLUME = "POE_LIVE_SEARCH_SOUND_VOLUME";
 
 const Container = styled.div`
   font-family: sans-serif;
@@ -63,6 +64,9 @@ export default function Main() {
   const [voiceVolume, setVoiceVolume] = useState(
     parseFloat(localStorage.getItem(VOICE_VOLUME) ?? 0.3)
   );
+  const [soundVolume, setSoundVolume] = useState(
+    parseFloat(localStorage.getItem(SOUND_VOLUME) ?? 0.3)
+  );
   const [verbose, setVerbose] = useState(
     localStorage.getItem(VOICE_VERBOSE) === "true"
   );
@@ -103,6 +107,7 @@ export default function Main() {
     socket.on("new-listing", (data) => {
       console.log("data", data);
       const listing = {
+        ...data,
         ...data.listing,
         item: data.item,
         id: data.id,
@@ -127,6 +132,12 @@ export default function Main() {
     if (!newest) {
       return;
     }
+    if (newest.sound) {
+      const audioElement = new Audio(`/${newest.sound.toLowerCase()}.mp3`);
+      audioElement.volume = soundVolume;
+      audioElement.play();
+      return;
+    }
     if (Date.now() - lastSay < VOICE_COOLDOWN_MS) {
       return;
     }
@@ -135,6 +146,7 @@ export default function Main() {
     }
 
     const phrase = makePhrase(newest);
+    console.log("newest", newest);
     if (verbose && phrase) {
       sayWithVoice(phrase, voice, voiceVolume);
     } else {
@@ -204,6 +216,21 @@ export default function Main() {
                 localStorage.setItem(MAX_CHAOS, newMaxChaos);
               }}
               value={maxChaos}
+            />
+          </label>
+          <label>
+            Sound Volume:&nbsp;
+            <input
+              type="number"
+              min="0"
+              max="1"
+              step="0.05"
+              onChange={(e) => {
+                const newSoundVolume = parseFloat(e.target.value);
+                setSoundVolume(newSoundVolume);
+                localStorage.setItem(SOUND_VOLUME, newSoundVolume);
+              }}
+              value={soundVolume}
             />
           </label>
           <VoiceChooser

@@ -54,6 +54,7 @@ app.use(compression());
 app.use(express.json());
 app.use(router);
 app.use(express.static("dist"));
+app.use(express.static("assets"));
 
 app.use((req, res) => {
   res.sendFile(path.resolve(__dirname, "./dist/index.html"));
