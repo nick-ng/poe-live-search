@@ -1,7 +1,7 @@
-#NoEnv  ; Recommended for performance and compatibility with future AutoHotkey releases.
+#NoEnv ; Recommended for performance and compatibility with future AutoHotkey releases.
 ; #Warn  ; Enable warnings to assist with detecting common errors.
-SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
-SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
+SendMode Input ; Recommended for new scripts due to its superior speed and reliability.
+SetWorkingDir %A_ScriptDir% ; Ensures a consistent starting directory.
 
 #SingleInstance force
 
@@ -13,29 +13,46 @@ xoffset := VirtualScreenWidth / 2
 yoffset := VirtualScreenHeight / 2
 
 initGui() {
-Gui, Add, Button, h30 w80 gReply, Reply
-Gui, Add, Button, x89 y6 h30 w80 gThankYou, Thanks
-Gui, Add, Button, x168 y6 h30 w80 gSendMessage, Send
-Gui, Add, Button, x247 y6 h30 w80 ggoToHideout, Hideout
-Gui, +E0x20 +Lastfound +AlwaysOnTop -Caption +ToolWindow
-Gui, Show, y0
-return
+  Gui, Add, Button, h30 w80 gReply, Reply
+  Gui, Add, Button, x89 y6 h30 w80 gThankYou, Thanks
+  Gui, Add, Button, x168 y6 h30 w80 gSendMessage, Send
+  Gui, Add, Button, x247 y6 h30 w80 gHideout, Hideout
+  Gui, Add, Button, x326 y6 h30 w80 gLeave, Leave
+  Gui, +E0x20 +Lastfound +AlwaysOnTop -Caption +ToolWindow
+  Gui, Show, y0
+  return
 }
 
 initGui()
 
-goToHideout() {
+gHideout() {
   Clipboard := "/hideout"
   if WinExist("ahk_class POEWindowClass") {
     if WinActive("ahk_class POEWindowClass") {
     }
     WinActivate
     Sleep, 50
-  Send {Enter}
-  Sleep, 100
-  Send ^{v}
-  Sleep, 100
-  Send {Enter}
+    Send {Enter}
+    Sleep, 100
+    Send ^{v}
+    Sleep, 100
+    Send {Enter}
+  }
+  return
+}
+
+LeaveParty() {
+  Clipboard := "/leave"
+  if WinExist("ahk_class POEWindowClass") {
+    if WinActive("ahk_class POEWindowClass") {
+    }
+    WinActivate
+    Sleep, 50
+    Send {Enter}
+    Sleep, 100
+    Send ^{v}
+    Sleep, 100
+    Send {Enter}
   }
   return
 }
@@ -48,7 +65,7 @@ Reply() {
     Sleep, 50
     Send ^{Enter}
   }
-    return
+  return
 }
 
 ThankYou()
@@ -58,8 +75,8 @@ ThankYou()
     if WinActive("ahk_class POEWindowClass") {
     }
     WinActivate
-  Sleep, 50
-  Send ^{v}
+    Sleep, 50
+    Send ^{v}
   }
   return
 }
@@ -70,8 +87,8 @@ SendMessage()
     if WinActive("ahk_class POEWindowClass") {
     }
     WinActivate
-  Sleep, 50
-  Send {Enter}
+    Sleep, 50
+    Send {Enter}
   }
   return
 }
@@ -81,36 +98,36 @@ SendMessage()
 
 ; "Back" mouse button to auto whisper once you've copied the
 XButton1::
-sendWhisperToPoE()
+  sendWhisperToPoE()
 return
 
 ; "Forward" mouse button to auto whisper once you've copied the
 XButton2::
-sendWhisperToPoE()
+  sendWhisperToPoE()
 return
 
 sendWhisperToPoE() {
-    if WinExist("ahk_class POEWindowClass") {
-  Clipboard := ""
-  Sleep, 50
-  Send {Click}
-  ClipWait, 1
-  if ErrorLevel
-  {
-    return
+  if WinExist("ahk_class POEWindowClass") {
+    Clipboard := ""
+    Sleep, 50
+    Send {Click}
+    ClipWait, 1
+    if ErrorLevel
+    {
+      return
+    }
+    if WinActive("ahk_class POEWindowClass") {
+      return
+    }
+    WinActivate
+    Sleep, 50
+    Send {Enter}
+    Sleep, 100
+    Send ^{v}
+    Sleep, 100
+    Send {Enter}
   }
-  if WinActive("ahk_class POEWindowClass") {
-    return
-  }
-  WinActivate
-  Sleep, 50
-  Send {Enter}
-  Sleep, 100
-  Send ^{v}
-  Sleep, 100
-  Send {Enter}
-}
-return
+  return
 }
 
 PasteString(str)
@@ -121,11 +138,10 @@ PasteString(str)
   return
 }
 
-
 #IfWinActive ahk_class POEWindowClass
 
-; Shift + Click
-WheelUp::Send +{Click}
+  ; Shift + Click
+  WheelUp::Send +{Click}
 
-; Ctrl + Click
-WheelDown::Send ^{Click}
+  ; Ctrl + Click
+  WheelDown::Send ^{Click}
