@@ -25,7 +25,7 @@ initGui() {
 
 initGui()
 
-gHideout() {
+Hideout() {
   Clipboard := "/hideout"
   if WinExist("ahk_class POEWindowClass") {
     if WinActive("ahk_class POEWindowClass") {
