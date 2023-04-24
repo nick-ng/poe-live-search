@@ -31,11 +31,11 @@ Hideout() {
     if WinActive("ahk_class POEWindowClass") {
     }
     WinActivate
-    Sleep, 50
+    Sleep, 150
     Send {Enter}
-    Sleep, 100
+    Sleep, 200
     Send ^{v}
-    Sleep, 100
+    Sleep, 200
     Send {Enter}
   }
   return
@@ -47,11 +47,11 @@ LeaveParty() {
     if WinActive("ahk_class POEWindowClass") {
     }
     WinActivate
-    Sleep, 50
+    Sleep, 150
     Send {Enter}
-    Sleep, 100
+    Sleep, 200
     Send ^{v}
-    Sleep, 100
+    Sleep, 200
     Send {Enter}
   }
   return
@@ -62,7 +62,7 @@ Reply() {
     if WinActive("ahk_class POEWindowClass") {
     }
     WinActivate
-    Sleep, 50
+    Sleep, 150
     Send ^{Enter}
   }
   return
@@ -75,7 +75,7 @@ ThankYou()
     if WinActive("ahk_class POEWindowClass") {
     }
     WinActivate
-    Sleep, 50
+    Sleep, 150
     Send ^{v}
   }
   return
@@ -87,7 +87,7 @@ SendMessage()
     if WinActive("ahk_class POEWindowClass") {
     }
     WinActivate
-    Sleep, 50
+    Sleep, 150
     Send {Enter}
   }
   return
@@ -109,7 +109,7 @@ return
 sendWhisperToPoE() {
   if WinExist("ahk_class POEWindowClass") {
     Clipboard := ""
-    Sleep, 50
+    Sleep, 150
     Send {Click}
     ClipWait, 1
     if ErrorLevel
@@ -120,11 +120,11 @@ sendWhisperToPoE() {
       return
     }
     WinActivate
-    Sleep, 50
+    Sleep, 150
     Send {Enter}
-    Sleep, 100
+    Sleep, 200
     Send ^{v}
-    Sleep, 100
+    Sleep, 200
     Send {Enter}
   }
   return
@@ -133,7 +133,7 @@ sendWhisperToPoE() {
 PasteString(str)
 {
   Clipboard := str
-  Sleep, 50
+  Sleep, 150
   Send ^{v}
   return
 }
