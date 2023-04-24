@@ -17,7 +17,7 @@ initGui() {
   Gui, Add, Button, x89 y6 h30 w80 gThankYou, Thanks
   Gui, Add, Button, x168 y6 h30 w80 gSendMessage, Send
   Gui, Add, Button, x247 y6 h30 w80 gHideout, Hideout
-  Gui, Add, Button, x326 y6 h30 w80 gLeave, Leave
+  Gui, Add, Button, x326 y6 h30 w80 gLeaveParty, Leave
   Gui, +E0x20 +Lastfound +AlwaysOnTop -Caption +ToolWindow
   Gui, Show, y0
   return
